@@ -39,3 +39,23 @@
 -keep class com.ksy.statlibrary.** {
   *;
 }
+
+-keep class com.ksyun.media.streamer.** {
+  *;
+}
+
+-keep class com.ksyun.media.player.** {
+  *;
+}
+
+-keep class com.ksyun.media.kmcfilter.** {
+*;
+}
+
+-keep class com.faceunity.wrapper.** {
+*;
+}
+
+-keep class com.spap.** {
+*;
+}
