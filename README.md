@@ -6,10 +6,10 @@
 **缩略图**:下图左侧下方十个格子中，每个格子中的的icon即为滤镜缩略图。  
 **贴纸特效动作**:贴纸里可能含有点头，摇头，张嘴等触发特效的动作，KMCArMaterial里详细定义了具体的触发动作和tips.  
 
-## 安装
-demo目录:   
+## 安装  
+工程目录:   
 **demo**:Faceunity贴纸示例工程  
-**demo/libs**: 魔方sdk包libkmcfilter.jar，以及厂家sdk包  
+**libs**: 魔方sdk包libkmcfilter.jar，以及厂家sdk包  
 此外，gradle需要依赖libksylive库:   
 compile 'com.ksyun.media:libksylive-java:2.3.2'   
 compile 'com.ksyun.media:libksylive-arm64:2.3.2'  
