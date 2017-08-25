@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <android.opengl.GLSurfaceView
+        android:id="@+id/kmc_camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
+
+    <com.ksyun.KMCFuFilterDemo.beauty.CameraHintView
+        android:id="@+id/kmc_camera_hint"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true" />
+
+    <ImageView
+        android:id="@+id/back_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="23dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/back_off" />
+
+    <ImageView
+        android:id="@+id/kmc_switch_cam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="23dp"
+        android:layout_gravity="top"
+        android:background="@drawable/switch_camera" />
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:layout_below="@id/kmc_switch_cam"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_gravity="center"
+        android:format="%s"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="29sp" />
+
+    <ImageView
+        android:id="@+id/start_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/beauty_choose_layout"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="18dp"
+        android:src="@drawable/start" />
+
+    <include
+        android:id="@+id/beauty_choose_layout"
+        layout="@layout/beauty_choose_layout"
+        android:layout_above="@+id/bottom_layout"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        >
+    </include>
+
+    <include
+        android:id="@+id/bottom_layout"
+        layout="@layout/bottom_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        >
+    </include>
+
+</RelativeLayout>

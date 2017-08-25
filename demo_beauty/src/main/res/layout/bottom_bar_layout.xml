@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="3"
+    android:background="@color/bg">
+
+    <LinearLayout
+        android:id="@+id/filter_icon_layout"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/filter_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/filter_off" />
+        <TextView
+            android:id="@+id/filter_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="@string/filter"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/beauty_icon_layout"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/beauty_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/beauty_off"/>
+        <TextView
+            android:id="@+id/beauty_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="@string/beauty"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/shape_icon_layout"
+        android:orientation="vertical"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/shape_img"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/shape_off"/>
+        <TextView
+            android:id="@+id/shape_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:text="@string/shape"/>
+    </LinearLayout>
+</LinearLayout>

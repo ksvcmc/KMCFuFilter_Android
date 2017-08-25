@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">美颜美型</string>
+    <string name="main_activity_header">faceunity Demo (美颜)</string>
+    <string name="stream_url">推流地址</string>
+    <string name="single_line_input">单行输入</string>
+    <string name="save_file">保存本地</string>
+    <string name="start">体验美颜</string>
+    <string name="demo_note">Demo说明</string>
+    <string name="note">\n \n \n faceunity提供的AR贴纸、美颜功能可运用在金山直播SDK、短视频SDK上，其他SDK需要根据其开放性决定 \n \n
+      若想进一步了解请联系我们 \n \n  邮件: KSC-VBU-KMC@kingsoft.com</string>
+    <string name="filter">滤镜</string>
+    <string name="beauty">美颜</string>
+    <string name="shape">美型</string>
+    <string name="blur">磨皮</string>
+    <string name="color">美白</string>
+    <string name="red">红润</string>
+    <string name="face_shape">脸型</string>
+    <string name="shape_default">默认</string>
+    <string name="shape_god">女神</string>
+    <string name="shape_star">网红</string>
+    <string name="shape_nature">自然</string>
+    <string name="eye">大眼</string>
+    <string name="thin">瘦脸</string>
+</resources>
