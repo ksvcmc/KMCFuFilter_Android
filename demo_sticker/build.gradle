@@ -40,5 +40,5 @@ dependencies {
     compile 'com.ksyun.media:libksylive-arm64:2.3.2'
     compile 'com.ksyun.media:libksylive-armv7a:2.3.2'
     compile 'com.ksyun.media:libksylive-x86:2.3.2'
-    compile(name: 'kmcfilter_fu-release', ext: 'aar')
+    compile(name: 'kmcfilter', ext: 'aar')
 }

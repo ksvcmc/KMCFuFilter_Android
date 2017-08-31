@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
@@ -39,13 +40,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ksyun.media.kmcfilter.KMCFilter;
+import com.ksyun.media.streamer.capture.CameraCapture;
 import com.ksyun.media.streamer.capture.camera.CameraTouchHelper;
-import com.ksyun.media.streamer.filter.imgtex.ImgTexFilterBase;
-import com.ksyun.media.streamer.filter.imgtex.ImgTexFilterMgt;
+import com.ksyun.media.streamer.encoder.VideoEncodeFormat;
 import com.ksyun.media.streamer.kit.KSYStreamer;
 import com.ksyun.media.streamer.kit.StreamerConstants;
 import com.ksyun.media.streamer.logstats.StatsLogReport;
 import com.xw.repo.BubbleSeekBar;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by sujia on 2017/8/16.
@@ -123,9 +129,10 @@ public class CameraActivity extends Activity implements
         initUI();
         setController();
 
-        hideChooseBeautyLayout(true);
-
         initStreamer();
+
+        hideChooseBeautyLayout(true);
+        onDefaultShapeClicked();
     }
 
     private void initUI() {
@@ -301,33 +308,25 @@ public class CameraActivity extends Activity implements
         mStreamer.setPreviewResolution(StreamerConstants.VIDEO_RESOLUTION_720P);
         mStreamer.setTargetResolution(StreamerConstants.VIDEO_RESOLUTION_720P);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mStreamer.setAudioChannels(1);
 
         mStreamer.setUrl(mURL);
         mStreamer.setDisplayPreview(mCameraPreviewView);
         mStreamer.setEnableStreamStatModule(true);
         mStreamer.enableDebugLog(true);
         mStreamer.setFrontCameraMirror(true);
-        mStreamer.setMuteAudio(true);
+
+        mStreamer.setCameraFacing(CameraCapture.FACING_FRONT);
+        mStreamer.setMuteAudio(false);
         mStreamer.setEnableAudioPreview(false);
-//        mStreamer.setEnableAutoRestart(true, 3000);
         mStreamer.setOnInfoListener(mOnInfoListener);
         mStreamer.setOnErrorListener(mOnErrorListener);
         mStreamer.setOnLogEventListener(mOnLogEventListener);
         //设置为软编
-        mStreamer.setVideoEncodeMethod(StreamerConstants.ENCODE_METHOD_SOFTWARE);
-
-        mStreamer.getImgTexFilterMgt().setFilter(mStreamer.getGLRender(),
-                ImgTexFilterMgt.KSY_FILTER_BEAUTY_DENOISE);
-        mStreamer.setEnableImgBufBeauty(true);
-        mStreamer.getImgTexFilterMgt().setOnErrorListener(new ImgTexFilterBase.OnErrorListener() {
-            @Override
-            public void onError(ImgTexFilterBase filter, int errno) {
-                Toast.makeText(CameraActivity.this, "当前机型不支持该滤镜",
-                        Toast.LENGTH_SHORT).show();
-                mStreamer.getImgTexFilterMgt().setFilter(mStreamer.getGLRender(),
-                        ImgTexFilterMgt.KSY_FILTER_BEAUTY_DISABLE);
-            }
-        });
+        mStreamer.setEncodeMethod(StreamerConstants.ENCODE_METHOD_SOFTWARE);
+        mStreamer.setVideoCodecId(StreamerConstants.CODEC_ID_AVC);
+        mStreamer.setVideoEncodeScene(VideoEncodeFormat.ENCODE_SCENE_SHOWSELF);
+        mStreamer.setVideoEncodeProfile(VideoEncodeFormat.ENCODE_PROFILE_LOW_POWER);
 
         // touch focus and zoom support
         CameraTouchHelper cameraTouchHelper = new CameraTouchHelper();
@@ -344,7 +343,9 @@ public class CameraActivity extends Activity implements
     private CameraTouchHelper.OnTouchListener mTouchListener = new CameraTouchHelper.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            hideChooseBeautyLayout(true);
+            if (motionEvent.getRawY() - mChooseBeautyLayout.getTop() < 0) {
+                hideChooseBeautyLayout(true);
+            }
             return false;
         }
     };
@@ -549,6 +550,14 @@ public class CameraActivity extends Activity implements
             return;
         }
         //录制开始成功后会发送StreamerConstants.KSY_STREAMER_OPEN_FILE_SUCCESS消息
+        Date date = new Date() ;
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss") ;
+        try {
+            mRecordUrl = Environment.getExternalStorageDirectory().getCanonicalPath() +
+                    File.separator + dateFormat.format(date) + ".mp4";
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         mStreamer.startRecord(mRecordUrl);
         mIsFileRecording = true;
     }
