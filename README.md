@@ -259,7 +259,7 @@ void authorize(Context context, String token, AuthResultListener listener)；
 7.试用中或试用结束后，有意愿购买该服务可以与我们的商务人员联系购买。  
 （商务Email:KSC-VBU-KMC@kingsoft.com）
 ## Demo下载
-![Alt text](https://raw.githubusercontent.com/wiki/ksvcmc/KMCFuFilter_iOS/fucode.png)
+![Alt text](https://raw.githubusercontent.com/wiki/ksvcmc/KMCFuFilter_Android/fu_android.png)
 ## 反馈与建议  
 主页：[金山魔方](https://docs.ksyun.com/read/latest/142/_book/index.html)  
 邮箱：ksc-vbu-kmc-dev@kingsoft.com  
