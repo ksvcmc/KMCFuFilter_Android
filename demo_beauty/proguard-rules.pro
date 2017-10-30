@@ -23,3 +23,32 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}
+
+-dontskipnonpubliclibraryclassmembers
+
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-ignorewarnings
+-verbose
+-dontoptimize
+-dontwarn
+
+-keep class com.ksyun.** {
+  *;
+}
+
+-keep class com.ksy.statlibrary.** {
+  *;
+}
+
+-keep class com.faceunity.** {
+  *;
+}
+
+-keep class com.spap.** {
+  *;
+}

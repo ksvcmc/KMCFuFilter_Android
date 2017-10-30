@@ -30,7 +30,7 @@ public class BubbleConfigBuilder {
     boolean showSectionText;
     int sectionTextSize;
     int sectionTextColor;
-    @com.xw.repo.BubbleSeekBar.TextPosition
+    @BubbleSeekBar.TextPosition
     int sectionTextPosition;
     int sectionTextInterval;
     boolean showThumbText;
@@ -44,9 +44,9 @@ public class BubbleConfigBuilder {
     int bubbleTextColor;
     boolean alwaysShowBubble;
 
-    private com.xw.repo.BubbleSeekBar mBubbleSeekBar;
+    private BubbleSeekBar mBubbleSeekBar;
 
-    BubbleConfigBuilder(com.xw.repo.BubbleSeekBar bubbleSeekBar) {
+    BubbleConfigBuilder(BubbleSeekBar bubbleSeekBar) {
         mBubbleSeekBar = bubbleSeekBar;
     }
 

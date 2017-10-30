@@ -15,3 +15,31 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontwarn com.tencent.bugly.**
+-keep public class com.tencent.bugly.**{*;}
+-dontskipnonpubliclibraryclassmembers
+
+-dontusemixedcaseclassnames
+-dontskipnonpubliclibraryclasses
+-dontpreverify
+-ignorewarnings
+-verbose
+-dontoptimize
+-dontwarn
+
+-keep class com.ksyun.** {
+  *;
+}
+
+-keep class com.ksy.statlibrary.** {
+  *;
+}
+
+-keep class com.faceunity.** {
+  *;
+}
+
+-keep class com.spap.** {
+   *;
+}

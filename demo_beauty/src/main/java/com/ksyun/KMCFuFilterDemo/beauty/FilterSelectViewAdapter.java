@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -34,7 +35,7 @@ public class FilterSelectViewAdapter extends RecyclerView.Adapter {
     private Context mContext;
 
     public FilterSelectViewAdapter(RecyclerView recyclerView, Context context) {
-        mContext = context;
+        mContext = context.getApplicationContext();
         mOwnerRecyclerView = recyclerView;
 
         mItemsClickStateList = new ArrayList<>();
@@ -47,7 +48,7 @@ public class FilterSelectViewAdapter extends RecyclerView.Adapter {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
         view.setLayoutParams(lp);
-        return new ItemViewHolder(view);
+        return new ItemViewHolder(view, this);
     }
 
     @Override
@@ -87,14 +88,16 @@ public class FilterSelectViewAdapter extends RecyclerView.Adapter {
         return FILTER_ITEM_RES_ARRAY.length;
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+        private final WeakReference<FilterSelectViewAdapter> adpter;
         private LinearLayout mItemLayout;
         private ImageView mItemThumb;
         private TextView mItemName;
         private int position;
 
-        public ItemViewHolder(View itemView) {
+        public ItemViewHolder(View itemView, FilterSelectViewAdapter adapter) {
             super(itemView);
+            this.adpter = new WeakReference<FilterSelectViewAdapter>(adapter);
             this.mItemLayout = (LinearLayout) itemView;
             this.mItemThumb = (ImageView) itemView.findViewById(R.id.item_thumb);
             this.mItemName = (TextView) itemView.findViewById(R.id.item_name);
@@ -103,10 +106,10 @@ public class FilterSelectViewAdapter extends RecyclerView.Adapter {
         public void setSelected(boolean select) {
             if (select) {
                 mItemThumb.setBackgroundResource(R.drawable.item_chosen);
-                mItemName.setTextColor(mContext.getResources().getColor(R.color.white));
+                mItemName.setTextColor(adpter.get().mContext.getResources().getColor(R.color.white));
             } else {
                 mItemThumb.setBackgroundColor(Color.TRANSPARENT);
-                mItemName.setTextColor(mContext.getResources().getColor(R.color.grey));
+                mItemName.setTextColor(adpter.get().mContext.getResources().getColor(R.color.grey));
             }
         }
     }

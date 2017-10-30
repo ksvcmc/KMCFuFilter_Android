@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
-import android.media.MediaScannerConnection;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -46,6 +45,7 @@ import com.ksyun.media.streamer.encoder.VideoEncodeFormat;
 import com.ksyun.media.streamer.kit.KSYStreamer;
 import com.ksyun.media.streamer.kit.StreamerConstants;
 import com.ksyun.media.streamer.logstats.StatsLogReport;
+import com.ksyun.media.streamer.util.gles.GLRender;
 import com.xw.repo.BubbleSeekBar;
 
 import java.io.File;
@@ -100,18 +100,15 @@ public class CameraActivity extends Activity implements
 
     private ButtonObserver mObserverButton;
 
-    private KSYStreamer mStreamer;
+    private KMCStreamer mStreamer;
     private KMCFilter mFilter;
     private Handler mMainHandler;
-
-    private boolean mPause = false;
 
     private String mURL;
     private boolean mSaveLocalFile = false;
 
     private boolean mIsStreaming = false;
     private boolean mIsFileRecording = false;
-    private boolean mIsFlashOpened = false;
     private boolean mHWEncoderUnsupported;
     private boolean mSWEncoderUnsupported;
 
@@ -300,13 +297,14 @@ public class CameraActivity extends Activity implements
 
     private void initStreamer() {
         //set para to  ksystreamer
-        mStreamer = new KSYStreamer(this);
-        mStreamer.setPreviewFps(15);
+        mStreamer = new KMCStreamer(this);
+        mStreamer.setPreviewFps(30);
         mStreamer.setTargetFps(15);
         mStreamer.setVideoKBitrate(800);
         mStreamer.setAudioKBitrate(48);
-        mStreamer.setPreviewResolution(StreamerConstants.VIDEO_RESOLUTION_720P);
-        mStreamer.setTargetResolution(StreamerConstants.VIDEO_RESOLUTION_720P);
+        mStreamer.setCameraCaptureResolution(StreamerConstants.VIDEO_RESOLUTION_360P);
+        mStreamer.setPreviewResolution(StreamerConstants.VIDEO_RESOLUTION_360P);
+        mStreamer.setTargetResolution(StreamerConstants.VIDEO_RESOLUTION_360P);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         mStreamer.setAudioChannels(1);
 
@@ -336,8 +334,33 @@ public class CameraActivity extends Activity implements
         cameraTouchHelper.setCameraHintView(mCameraHintView);
         cameraTouchHelper.addTouchListener(mTouchListener);
 
-        mFilter = new KMCFilter(getApplicationContext(), mStreamer.getGLRender());
+        mFilter = new KMCFilter(getApplicationContext(), mStreamer.getGLRender(),
+                mStreamer.getCameraCapture());
         mStreamer.getImgTexFilterMgt().setFilter(mFilter);
+
+        mStreamer.getImgTexPreviewer().getGLRender().addListener(new GLRender.GLRenderListener() {
+            @Override
+            public void onReady() {
+
+            }
+
+            @Override
+            public void onSizeChanged(int width, int height) {
+                mFilter.setMirror(mStreamer.isFrontCameraMirrorEnabled() &&
+                        mStreamer.isFrontCamera());
+                mFilter.setPreviewSize(mStreamer.getPreviewWidth(), mStreamer.getPreviewHeight());
+            }
+
+            @Override
+            public void onDrawFrame() {
+
+            }
+
+            @Override
+            public void onReleased() {
+
+            }
+        });
     }
 
     private CameraTouchHelper.OnTouchListener mTouchListener = new CameraTouchHelper.OnTouchListener() {
@@ -357,18 +380,18 @@ public class CameraActivity extends Activity implements
     @Override
     public void onResume() {
         super.onResume();
-        startCameraPreviewWithPermCheck();
 
         mStreamer.setDisplayPreview(mCameraPreviewView);
-        mPause = false;
         mStreamer.onResume();
         mCameraHintView.hideAll();
+
+        // camera may be occupied by other app in background
+        startCameraPreviewWithPermCheck();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mPause = true;
         mStreamer.onPause();
         mStreamer.stopCameraPreview();
     }
@@ -382,7 +405,6 @@ public class CameraActivity extends Activity implements
             mMainHandler = null;
         }
 
-        mStreamer.setOnLogEventListener(null);
         mStreamer.release();
     }
 
@@ -621,6 +643,10 @@ public class CameraActivity extends Activity implements
                     break;
                 case StreamerConstants.KSY_STREAMER_EST_BW_DROP:
                     Log.d(TAG, "BW drop to " + msg1 / 1000 + "kpbs");
+                    break;
+                case StreamerConstants.KSY_STREAMER_CAMERA_FACEING_CHANGED:
+                    mFilter.setMirror(mStreamer.isFrontCameraMirrorEnabled() &&
+                            mStreamer.isFrontCamera());
                     break;
                 default:
                     Log.d(TAG, "OnInfo: " + what + " msg1: " + msg1 + " msg2: " + msg2);
@@ -914,12 +940,9 @@ public class CameraActivity extends Activity implements
     }
 
     private void notifyMediaScanner(String path) {
-        MediaScannerConnection.scanFile(this,
-                new String[] { path }, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, final Uri uri) {
-                        Log.i("ExternalStorage", "Scanned " + path + ":");
-                    }
-                });
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(new File(path));
+        mediaScanIntent.setData(contentUri);
+        getApplicationContext().sendBroadcast(mediaScanIntent);
     }
 }
