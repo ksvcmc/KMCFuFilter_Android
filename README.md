@@ -247,7 +247,32 @@ void authorize(Context context, String token, AuthResultListener listener)；
          void setFaceShapeLevel(float level)
      ```
 
-     ​
+### 3. 新增接口
+
+       为提升美颜和贴纸使用时效率，v1.0.7版本之后，新增以下接口，将预览分辨率、是否使用前置镜像的配置信息同步到KMCFilter中。
+       设置参数的方法和时机，可参考demo用法。
+
+   + **setMirror**​
+
+     ```java
+     /**
+          * set mirror is enabled front camear mirror
+          * @param isMirror 是否开启了摄像头镜像
+          */
+         public void setMirror(boolean isMirror)
+     ```
+
+   + **setPreviewSize**​
+     ```java
+     /**
+          * set preview size
+          * @param width
+          * @param height
+          */
+         public void setPreviewSize(int width, int height)
+     ```
+
+
 
 ## 接入流程
 

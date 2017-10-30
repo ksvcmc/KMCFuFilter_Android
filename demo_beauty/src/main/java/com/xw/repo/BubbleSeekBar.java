@@ -382,7 +382,7 @@ public class BubbleSeekBar extends View {
         mBubbleCenterRawX = mBubbleCenterRawSolidX + mTrackLength * (mProgress - mMin) / mDelta;
         mBubbleCenterRawSolidY = mPoint[1] - mBubbleView.getMeasuredHeight();
         mBubbleCenterRawSolidY -= dp2px(24);
-        if (com.xw.repo.BubbleUtils.isMIUI()) {
+        if (BubbleUtils.isMIUI()) {
             mBubbleCenterRawSolidY += dp2px(4);
         }
     }
@@ -718,7 +718,7 @@ public class BubbleSeekBar extends View {
                     | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                     | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED;
             // MIUI禁止了开发者使用TYPE_TOAST，Android 7.1.1 对TYPE_TOAST的使用更严格
-            if (com.xw.repo.BubbleUtils.isMIUI() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            if (BubbleUtils.isMIUI() || Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
                 mLayoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
             } else {
                 mLayoutParams.type = WindowManager.LayoutParams.TYPE_TOAST;

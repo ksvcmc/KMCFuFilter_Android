@@ -141,4 +141,10 @@ public class MainActivity extends AppCompatActivity {
         mSaveFileSwitch.setImageResource(mSaveLocalFile ? R.drawable.save_file_on :
                 R.drawable.save_file_off);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        KMCAuthManager.getInstance().release();
+    }
 }
