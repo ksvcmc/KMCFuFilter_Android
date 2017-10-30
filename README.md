@@ -265,7 +265,7 @@ void authorize(Context context, String token, AuthResultListener listener)；
    + **setPreviewSize**​
      ```java
      /**
-          * set target size
+          * set preview size
           * @param width
           * @param height
           */
