@@ -16,7 +16,7 @@ import com.ksyun.media.kmcfilter.KMCAuthManager;
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = MainActivity.class.getSimpleName();
-    private final static String STREAMING_URL = "rtmp://test.uplive.ks-cdn.com/live/fu_beauty_test";
+    private final static String STREAMING_URL = "rtmp://120.92.224.235/live/fu_beauty_test";
 
     public final static String SAVE_LOCAL_VIDEO = "save_local_video";
     public final static String STREAM_URL = "stream_url";
