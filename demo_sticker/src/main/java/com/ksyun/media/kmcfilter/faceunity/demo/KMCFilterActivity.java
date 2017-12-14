@@ -56,7 +56,6 @@ import java.util.List;
 
 public class KMCFilterActivity extends Activity implements
         ActivityCompat.OnRequestPermissionsResultCallback {
-
     private static final String TAG = "KMCFilterActivity";
 
     private GLSurfaceView mCameraPreviewView;
@@ -106,10 +105,11 @@ public class KMCFilterActivity extends Activity implements
     private final static int PERMISSION_REQUEST_CAMERA_AUDIOREC = 1;
 
     //auth
-    //the uri of your appServer
     private boolean authorized = false;
 
     protected Handler mHandler = new MyHandler(this);
+
+    private final static boolean mUseLocalMaterialList = false;
 
     private static class MyHandler extends Handler {
         private final WeakReference<KMCFilterActivity> mActivity;
@@ -177,7 +177,6 @@ public class KMCFilterActivity extends Activity implements
         mActionStickerTypeView.setOnClickListener(mObserverButton);
         mFaceStickerTypeView = findViewById(R.id.face_sticker_layout);
         mFaceStickerTypeView.setOnClickListener(mObserverButton);
-        mActionStickerTypeView.setVisibility(View.GONE);
 
         mFaceStikcerImg = (ImageView)findViewById(R.id.face_sticker_img);
         mFaceStikcerTxt = (TextView) findViewById(R.id.face_sticker_txt);
@@ -579,9 +578,17 @@ public class KMCFilterActivity extends Activity implements
                     onSwitchCamera();
                     break;
                 case R.id.action_sticker_layout:
+                    mActionStikcerImg.setImageResource(R.drawable.action_sticker_on);
+                    mFaceStikcerImg.setImageResource(R.drawable.face_sticker_off);
+                    mActionStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_on));
+                    mFaceStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_off));
                     updateTabView(1);
                     break;
                 case R.id.face_sticker_layout:
+                    mActionStikcerImg.setImageResource(R.drawable.action_sticker_off);
+                    mFaceStikcerImg.setImageResource(R.drawable.face_sticker_on);
+                    mActionStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_off));
+                    mFaceStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_on));
                     updateTabView(0);
                     break;
                 default:
@@ -736,7 +743,7 @@ public class KMCFilterActivity extends Activity implements
     }
 
     private void onRecyclerViewItemClick(int position) {
-        MaterialInfoItem adinfo = mCurrentMaterialList.get(position);
+        MaterialInfoItem materialInfoItem = mCurrentMaterialList.get(position);
 
         if (position == 0) {
             mMaterial = null;
@@ -750,28 +757,38 @@ public class KMCFilterActivity extends Activity implements
             return;
         }
 
-        mMaterial = adinfo.material;
+        mMaterial = materialInfoItem.material;
 
-        if(KMCFilterManager.getInstance().isMaterialDownloaded(getApplicationContext(), adinfo.material)) {
-            closeMaterialsShowLayer();
+        if (!mUseLocalMaterialList) {
+            if(KMCFilterManager.getInstance().isMaterialDownloaded(getApplicationContext(), materialInfoItem.material)) {
+                closeMaterialsShowLayer();
 
-            if (mCurrentMaterialList == mActionMaterialList) {
-                makeToast(adinfo.material.actionTip);
+                if (mCurrentMaterialList == mActionMaterialList) {
+                    makeToast(materialInfoItem.material.actionTip);
+                }
+                mImgStickerFilter.startShowingMaterial(mMaterial);
+
+                if(mRecyclerViewAdapter.getItemState(position) != MSG_DOWNLOADSUCCESS){
+                    mHandler.sendMessage(mHandler.obtainMessage(MSG_DOWNLOADSUCCESS, position, 0));
+                }
+
+                saveSelectedIndex(position);
+                mRecyclerViewAdapter.setSelectIndex(position);
+            } else {
+                mHandler.sendMessage(mHandler.obtainMessage(MSG_STARTDOWNLOAD, position, 0));
+                KMCFilterManager.getInstance().
+                        downloadMaterial(getApplicationContext(), materialInfoItem.material, mDownloadListener);
             }
-            mImgStickerFilter.startShowingMaterial(mMaterial);
-
-            if(mRecyclerViewAdapter.getItemState(position) != MSG_DOWNLOADSUCCESS){
-                mHandler.sendMessage(mHandler.obtainMessage(MSG_DOWNLOADSUCCESS, position, 0));
+        } else {
+            if (mCurrentMaterialList == mActionMaterialList &&
+                    !materialInfoItem.material.actionTip.isEmpty()) {
+                makeToast(materialInfoItem.material.actionTip);
             }
+            mImgStickerFilter.startShowingMaterial(mMaterial.materialURL, true);
 
             saveSelectedIndex(position);
             mRecyclerViewAdapter.setSelectIndex(position);
-        } else {
-            mHandler.sendMessage(mHandler.obtainMessage(MSG_STARTDOWNLOAD, position, 0));
-            KMCFilterManager.getInstance().
-                    downloadMaterial(getApplicationContext(), adinfo.material, mDownloadListener);
         }
-        return;
     }
 
     protected void reportError(final String info) {
@@ -789,18 +806,18 @@ public class KMCFilterActivity extends Activity implements
             List<KMCArMaterial> adlist = list;
             for (int i = 0; i < adlist.size(); i++) {
                 KMCArMaterial material = adlist.get(i);
-                MaterialInfoItem adinfo = new MaterialInfoItem(material, null);
+                MaterialInfoItem materialInfoItem = new MaterialInfoItem(material, null);
 
                 if (KMCFilterManager.getInstance().isMaterialDownloaded(getApplicationContext(),
                         material)) {
-                    adinfo.setHasDownload(true);
+                    materialInfoItem.setHasDownload(true);
                 } else {
-                    adinfo.setHasDownload(false);
+                    materialInfoItem.setHasDownload(false);
                 }
                 if (material.actionId == 0) {
-                    mFaceMaterialList.add(adinfo);
+                    mFaceMaterialList.add(materialInfoItem);
                 } else {
-                    mActionMaterialList.add(adinfo);
+                    mActionMaterialList.add(materialInfoItem);
                 }
 
                 if (mHandler != null) {
@@ -866,15 +883,69 @@ public class KMCFilterActivity extends Activity implements
         }
     };
 
+
+    public static final int[] FACE_STICKER_ITEM_RES_ARRAY = {
+            R.mipmap.tiger, R.mipmap.chri3, R.mipmap.daisy_pig,
+            R.mipmap.tiara, R.mipmap.deer, R.mipmap.beagledog
+    };
+
+    public static final String[] FACE_STICKER_ITEM_NAME = {
+            "tiger.mp3", "chri3.mp3", "daisy_pig.mp3",
+            "tiara.mp3",  "Deer.mp3", "BeagleDog.mp3"};
+
+    public static final int[] ACTION_STICKER_ITEM_RES_ARRAY = {
+            R.mipmap.fu_ztt_520kouh, R.mipmap.fu_ztt_live520, R.mipmap.mood,
+            R.mipmap.tanghulu
+    };
+
+    public static final String[] ACTION_STICKER_ITEM_NAME = {
+            "fu_ztt_520kouh.mp3", "fu_ztt_live520.mp3", "Mood.mp3",
+            "tanghulu.mp3"
+    };
+
+    public static final String[] ACTION_STICKER_ITEM_TIP = {
+            "嘟嘴", "请用手比一个爱心",  "皱眉，或嘴角向上向下",
+            "张嘴"
+    };
+
     private void fetchMaterial(String groupID) {
         // 从AR服务器获取贴纸列表, 并保存其信息
-        KMCFilterManager.getInstance().fetchMaterials(getApplicationContext(),
-                groupID, mFetchMaterialListener);
+        if (!mUseLocalMaterialList) {
+            KMCFilterManager.getInstance().fetchMaterials(getApplicationContext(),
+                    groupID, mFetchMaterialListener);
+        } else {
+            //从本地加载贴纸
+
+            //人脸贴纸
+            for (int i = 0; i < FACE_STICKER_ITEM_RES_ARRAY.length; i++) {
+                KMCArMaterial material = new KMCArMaterial();
+                material.id = String.valueOf(i);
+                material.actionId = 0;//人脸贴纸
+                material.materialURL = "FUResource/"+ FACE_STICKER_ITEM_NAME[i];//本地贴纸路径
+                MaterialInfoItem materialInfoItem = new MaterialInfoItem(material, null);
+                materialInfoItem.setHasDownload(true);
+                materialInfoItem.thumbnail = BitmapFactory.decodeResource(getResources(),
+                        FACE_STICKER_ITEM_RES_ARRAY[i]);
+                mFaceMaterialList.add(materialInfoItem);
+            }
+
+            //动作贴纸
+            for (int i = 0; i < ACTION_STICKER_ITEM_RES_ARRAY.length; i++) {
+                KMCArMaterial material = new KMCArMaterial();
+                material.id = String.valueOf(i);
+                material.actionId = 1;//人脸贴纸
+                material.actionTip = ACTION_STICKER_ITEM_TIP[i];
+                material.materialURL = "FUResource/"+ ACTION_STICKER_ITEM_NAME[i];//本地贴纸路径
+                MaterialInfoItem materialInfoItem = new MaterialInfoItem(material, null);
+                materialInfoItem.setHasDownload(true);
+                materialInfoItem.thumbnail = BitmapFactory.decodeResource(getResources(),
+                        ACTION_STICKER_ITEM_RES_ARRAY[i]);
+                mActionMaterialList.add(materialInfoItem);
+            }
+        }
     }
 
     private void showMaterialLists() {
-        mFaceStikcerImg.setImageResource(R.drawable.face_sticker_on);
-        mFaceStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_on));
         if(authorized &&
                 mIsFirstFetchMaterialList){
             startGetMaterialList();
@@ -884,8 +955,6 @@ public class KMCFilterActivity extends Activity implements
     }
 
     private void closeMaterialsShowLayer() {
-        mFaceStikcerImg.setImageResource(R.drawable.face_sticker_off);
-        mFaceStikcerTxt.setTextColor(getResources().getColor(R.color.tab_text_off));
         if (mRecyclerViewAdapter != null) {
             mRecyclerViewAdapter.notifyDataSetChanged();
         }
