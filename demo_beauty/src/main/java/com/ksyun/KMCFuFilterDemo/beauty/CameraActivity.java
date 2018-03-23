@@ -338,27 +338,13 @@ public class CameraActivity extends Activity implements
                 mStreamer.getCameraCapture());
         mStreamer.getImgTexFilterMgt().setFilter(mFilter);
 
-        mStreamer.getImgTexPreviewer().getGLRender().addListener(new GLRender.GLRenderListener() {
-            @Override
-            public void onReady() {
-
-            }
-
+        mStreamer.getImgTexPreviewer().getGLRender().addListener(new GLRender.OnSizeChangedListener() {
             @Override
             public void onSizeChanged(int width, int height) {
+
                 mFilter.setMirror(mStreamer.isFrontCameraMirrorEnabled() &&
                         mStreamer.isFrontCamera());
                 mFilter.setPreviewSize(mStreamer.getPreviewWidth(), mStreamer.getPreviewHeight());
-            }
-
-            @Override
-            public void onDrawFrame() {
-
-            }
-
-            @Override
-            public void onReleased() {
-
             }
         });
     }

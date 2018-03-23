@@ -224,27 +224,13 @@ public class KMCFilterActivity extends Activity implements
         groupFilter.add(mImgStickerFilter);
         mStreamer.getImgTexFilterMgt().setFilter(groupFilter);
 
-        mStreamer.getImgTexPreviewer().getGLRender().addListener(new GLRender.GLRenderListener() {
-            @Override
-            public void onReady() {
-
-            }
-
+        mStreamer.getImgTexPreviewer().getGLRender().addListener(new GLRender.OnSizeChangedListener() {
             @Override
             public void onSizeChanged(int width, int height) {
+
                 mImgStickerFilter.setMirror(mStreamer.isFrontCameraMirrorEnabled() &&
                         mStreamer.isFrontCamera());
                 mImgStickerFilter.setPreviewSize(mStreamer.getPreviewWidth(), mStreamer.getPreviewHeight());
-            }
-
-            @Override
-            public void onDrawFrame() {
-
-            }
-
-            @Override
-            public void onReleased() {
-
             }
         });
 
